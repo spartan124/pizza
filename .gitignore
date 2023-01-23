@@ -1,4 +1,5 @@
 *~
 pizzapp
-__pycache
+__pycache__
+.env
 
