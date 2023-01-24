@@ -4,14 +4,14 @@ from enum import Enum
 from ..utils import db
 
 
-class Sizes:
+class Sizes(Enum):
     SMALL = "small"
     MEDIUM = "medium"
     LARGE = "large"
     EXTRA_LARGE = "extra_large"
 
 
-class OrderStatus:
+class OrderStatus(Enum):
     PENDING = "pending"
     IN_TRANSIT = "in_transit"
     DELIVERED = "delivered"
