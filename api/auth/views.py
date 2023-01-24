@@ -1,8 +1,11 @@
+from flask import request
 from flask_restx import Namespace, Resource, fields
+from ..models.users import User
+from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_namespace = Namespace("auth", description="namespace for authentication")
 
-auth_model = auth_namespace.model(
+signup_model = auth_namespace.model(
     'user', {
         'id': fields.Integer(),
         'username': fields.String(required=True, description='A username'),
@@ -13,12 +16,21 @@ auth_model = auth_namespace.model(
 
 @auth_namespace.route("/signup")
 class Signup(Resource):
-    @auth_namespace.expect()
+    @auth_namespace.expect(signup_model)
     def post(self):
         """
          Sign up a User
         """
-        pass
+        data = request.get_json()
+
+        new_user = User(
+            username = data.get('username'),
+            email = data.get('email'),
+            password = generate_password_hash(data.get('password'))
+        )
+
+        new_user.save()
+        
 
 
 @auth_namespace.route('/login')
