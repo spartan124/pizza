@@ -12,7 +12,6 @@ auth_namespace = Namespace("auth", description="namespace for authentication")
 signup_model = auth_namespace.model(
     "SignUp",
     {
-        "id": fields.Integer(),
         "username": fields.String(required=True, description="A username"),
         "email": fields.String(required=True, description="An email"),
         "password": fields.String(required=True, description="A password"),
@@ -22,14 +21,12 @@ signup_model = auth_namespace.model(
 user_model = auth_namespace.model(
     "User",
     {
-        # 'id': fields.Integer(),
+        'id': fields.Integer(),
         "username": fields.String(required=True, description="A username"),
         "email": fields.String(required=True, description="An email"),
         "password_hash": fields.String(required=True, description="A password"),
-        "is_active": fields.Boolean(
-            description="This shows if a user is active or not"
-        ),
-        "is_staff": fields.Boolean(description="This shows if a user is active or not"),
+        "is_active": fields.Boolean(description="This shows if a user is active or not"),
+        "is_staff": fields.Boolean(description="This shows if the user is a staff or not"),
     },
 )
 
@@ -37,7 +34,7 @@ user_model = auth_namespace.model(
 @auth_namespace.route("/signup")
 class Signup(Resource):
     @auth_namespace.expect(signup_model)
-    @auth_namespace.marshal_with(signup_model)
+    @auth_namespace.marshal_with(user_model)
     def post(self):
         """
         Sign up a User
