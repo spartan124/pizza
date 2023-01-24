@@ -1,8 +1,9 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
 from ..models.users import User
+from ..utils import db
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from http import HTTPStatus
 auth_namespace = Namespace("auth", description="namespace for authentication")
 
 signup_model = auth_namespace.model(
@@ -17,6 +18,7 @@ signup_model = auth_namespace.model(
 @auth_namespace.route("/signup")
 class Signup(Resource):
     @auth_namespace.expect(signup_model)
+    @auth_namespace.marshal_with(signup_model)
     def post(self):
         """
          Sign up a User
@@ -30,6 +32,8 @@ class Signup(Resource):
         )
 
         new_user.save()
+
+        return new_user, HTTPStatus.CREATED
         
 
 
