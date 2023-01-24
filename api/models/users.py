@@ -1,6 +1,6 @@
 from ..utils import db
 
-class UserModel(db.Model):
+class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(45), nullable=False, unique=True)
@@ -8,6 +8,7 @@ class UserModel(db.Model):
     password_hash = db.Column(db.Text(), nullable=False)
     is_staff = db.Column(db.Boolean(), default=False)
     is_active = db.Column(db.Boolean(), default=False)
-
+    orders = db.relationship('Order', backref='customer', lazy=True)
+    
     def __repr__(self):
         return f"<User {self.username}>"
