@@ -60,6 +60,6 @@ class Signup(Resource):
 class Login(Resource):
     def post(self):
         """
-        Login a User
+            Generate JWT token
         """
         pass
