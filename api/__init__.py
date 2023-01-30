@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restx import Api
 from .orders.views import order_namespace as ons
 from .auth.views import auth_namespace as ans
@@ -18,11 +18,13 @@ def create_app(config=config_dict['dev']):
 
     jwt = JWTManager(app)
 
+    
+
     migrate = Migrate(app, db)
     
     api = Api(app)
 
-    api.add_namespace(ons, path="")
+    api.add_namespace(ons)
     api.add_namespace(ans, path="/auth")
 
     @app.shell_context_processor

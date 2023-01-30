@@ -23,6 +23,8 @@ class Order(db.Model):
     size = db.Column(db.Enum(Sizes), default=Sizes.SMALL)
     order_status = db.Column(db.Enum(OrderStatus), default=OrderStatus.PENDING)
     flavour = db.Column(db.String(), nullable=False)
+    flavour = db.Column(db.String(), nullable=False)
+    
     date_created = db.Column(db.DateTime(), default=datetime.utcnow)
     user = db.Column(db.Integer(), db.ForeignKey("users.id"))
 
