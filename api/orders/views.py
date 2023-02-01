@@ -1,22 +1,27 @@
-from flask_restx import Namespace, Resource, fields
 from http import HTTPStatus
+
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_restx import Namespace, Resource, fields
+
 from ..models.orders import Order
 from ..models.users import User
-from flask_jwt_extended import jwt_required, get_jwt_identity
 
 order_namespace = Namespace("orders", description="namespace for orders")
 
 order_model = order_namespace.model(
     "Order",
     {
+        "id": fields.Integer(
+            description='Order ID'
+        ),
         "flavour": fields.String(
-            description='pizza flavour', 
+            description='pizza flavour',
             required=True
         ),
         "quantity": fields.Integer(
-            description='Number of Pizza ordered', 
+            description='Number of Pizza ordered',
             required=True
-            ),
+        ),
         "size": fields.String(
             description="size of order",
             required=True,
@@ -33,7 +38,7 @@ order_model = order_namespace.model(
 
 @order_namespace.route("/orders")
 class OrderGetCreate(Resource):
-    
+
     @order_namespace.marshal_with(order_model)
     @jwt_required()
     def get(self):
@@ -57,9 +62,9 @@ class OrderGetCreate(Resource):
         data = order_namespace.payload
 
         new_order = Order(
-            size = data['size'],
-            quantity = data['quantity'],
-            flavour = data['flavour']
+            size=data['size'],
+            quantity=data['quantity'],
+            flavour=data['flavour']
         )
 
         new_order.user = current_user
@@ -71,11 +76,14 @@ class OrderGetCreate(Resource):
 
 @order_namespace.route("/order/<int:order_id>")
 class GetUpdateDelete(Resource):
+    @jwt_required()
+    @order_namespace.marshal_with(order_model)
     def get(self, order_id):
         """
         Retrieving an order by ID
         """
-        pass
+        order = Order.get_by_id(order_id)
+        return order, HTTPStatus.OK
 
     def put(self, order_id):
         """
@@ -102,7 +110,6 @@ class GetSpecificOrderByUser(Resource):
 @order_namespace.route("/user/<int:user_id>/orders")
 class GetUserOrder(Resource):
     def get(self):
-
         """
         Get all Orders by user
         """
