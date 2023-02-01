@@ -10,7 +10,7 @@ class Config:
     SECRET_KEY = config("SECRET_KEY", "secret")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=30)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(hours=3)
-    JWT_SECRET_KEY = "9bf954da9266b6784432ef88"  # config('JWT_SECRET_KEY')
+    JWT_SECRET_KEY = config('JWT_SECRET_KEY')
 
 
 class DevConfig(Config):
