@@ -2,7 +2,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_restx import Api
-
+from werkzeug.exceptions import NotFound, MethodNotAllowed
 from .auth.views import auth_namespace as ans
 from .config.config import config_dict
 from .models.orders import Order
@@ -38,7 +38,13 @@ def create_app(config=config_dict['dev']):
     api.add_namespace(ons)
     api.add_namespace(ans, path="/auth")
 
+    @api.errorhandler(NotFound)
+    def not_found(error):
+        return {'error': 'Not Found'}, 404
     
+    @api.errorhandler(MethodNotAllowed)
+    def method_not_allowed(error):
+        return {'error': 'Method Not Allowed'}
     
     @app.shell_context_processor
     def make_shell_context():
