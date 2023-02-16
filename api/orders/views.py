@@ -34,6 +34,16 @@ order_model = order_namespace.model(
         ),
     },
 )
+order_status_model = order_namespace.model(
+    'Order_status',{
+        "order_status": fields.String(
+            description="Status of Order",
+            required=True,
+            enum=["PENDING", "IN_TRANSIT", "DELIVERED"],
+        ),
+        
+    }
+)
 
 
 @order_namespace.route("/orders")
@@ -85,41 +95,82 @@ class GetUpdateDelete(Resource):
         order = Order.get_by_id(order_id)
         return order, HTTPStatus.OK
 
+    @order_namespace.expect(order_model)
+    @order_namespace.marshal_with(order_model)
+    @jwt_required()
     def put(self, order_id):
         """
         Update an Order by ID
         """
-        pass
-
+        order_to_update = Order.get_by_id(order_id)
+        
+        data = order_namespace.payload
+        
+        order_to_update.quantity = data['quantity']
+        order_to_update.flavour = data['flavour']
+        order_to_update.size = data['size']
+        order_to_update.order_status = data['order_status']
+        
+        order_to_update.update()
+        
+        return order_to_update,  HTTPStatus.OK
+        
+        
+    @jwt_required()
     def delete(self, order_id):
         """
         Delete an Order by ID
         """
-        pass
+        order_to_delete = Order.get_by_id(order_id)
+        
+        order_to_delete.delete()
+        
+        return f"Order with order id {order_to_delete.id} Successfully deleted", HTTPStatus.OK
+    
 
 
 @order_namespace.route("/user/<int:user_id>/order/<int:order_id>")
 class GetSpecificOrderByUser(Resource):
+    @order_namespace.marshal_list_with(order_model)
+    @jwt_required()
     def get(self, user_id, order_id):
         """
         Get an order from a specific User
         """
-        pass
+        user = User.get_by_id(user_id)
+        order = Order.query.filter_by(id=order_id).filter_by(user=user).first()
+        return order, HTTPStatus.OK
 
 
 @order_namespace.route("/user/<int:user_id>/orders")
 class GetUserOrder(Resource):
-    def get(self):
+    @order_namespace.marshal_list_with(order_model)
+    @jwt_required()
+    def get(self, user_id):
         """
         Get all Orders by user
         """
-        pass
-
-
+        user = User.get_by_id(user_id)
+        orders = user.orders
+        return orders, HTTPStatus.OK
+    
+    
 @order_namespace.route("/order/status/<int:order_id>")
 class UpdateOrdersStatus(Resource):
+    
+    @order_namespace.expect(order_status_model)
+    @order_namespace.marshal_with(order_status_model)
+    @jwt_required()
     def patch(self, order_id):
         """
         Update an Order's status
         """
-        pass
+        data = order_namespace.payload
+        
+        status_to_update = Order.get_by_id(order_id)
+        
+        status_to_update.order_status = data['order_status']
+        
+        status_to_update.update()
+        
+        return status_to_update, HTTPStatus.OK
