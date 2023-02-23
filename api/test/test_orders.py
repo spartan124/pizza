@@ -68,7 +68,22 @@ class OrderTestCase(unittest.TestCase):
             'Authorization': f'Bearer {token}'
         }
         
-        response = self.client.get('/orders/order/1', headers=headers)
+        order_1 = Order(
+            
+            size = 'EXTRA_LARGE',
+            flavour = 'chicken bbq pizza',
+            quantity=  1,         
+        )
+        order_2 = Order(
+            size = 'SMALL',
+            flavour = 'Pepperoni',
+            quantity=  10
+        )
+        
+        order_1.save() 
+        order_2.save()
         orders = Order.query.all()
-        assert len(orders) == 0
-        assert response.status_code == 404 
+        response = self.client.get('/orders/order/1', headers=headers)
+        
+        assert len(orders) >= 1
+        assert response.status_code == 200
