@@ -50,6 +50,7 @@ order_status_model = order_namespace.model(
 class OrderGetCreate(Resource):
 
     @order_namespace.marshal_with(order_model)
+    @order_namespace.doc(description='Get all orders')
     @jwt_required()
     def get(self):
         """
@@ -60,6 +61,7 @@ class OrderGetCreate(Resource):
 
     @order_namespace.expect(order_model)
     @order_namespace.marshal_with(order_model)
+    @order_namespace.doc(description='Place an Order')
     @jwt_required()
     def post(self):
         """
@@ -88,6 +90,12 @@ class OrderGetCreate(Resource):
 class GetUpdateDelete(Resource):
     @jwt_required()
     @order_namespace.marshal_with(order_model)
+    @order_namespace.doc(
+        description='Retrieving an order by its ID',
+        params= {
+            'order_id':'An ID for the Order'
+        }
+        )
     def get(self, order_id):
         """
         Retrieving an order by ID
@@ -97,6 +105,12 @@ class GetUpdateDelete(Resource):
 
     @order_namespace.expect(order_model)
     @order_namespace.marshal_with(order_model)
+    @order_namespace.doc(
+        description='Updating an Order by ID',
+        params= {
+            'order_id':'An ID for the Order'
+        }
+        )
     @jwt_required()
     def put(self, order_id):
         """
@@ -115,7 +129,12 @@ class GetUpdateDelete(Resource):
         
         return order_to_update,  HTTPStatus.OK
         
-        
+    @order_namespace.doc(
+        description='Deleting an Order by its ID',
+        params= {
+            'order_id':'An ID for the Order'
+        }
+        )    
     @jwt_required()
     def delete(self, order_id):
         """
@@ -132,6 +151,13 @@ class GetUpdateDelete(Resource):
 @order_namespace.route("/user/<int:user_id>/order/<int:order_id>")
 class GetSpecificOrderByUser(Resource):
     @order_namespace.marshal_list_with(order_model)
+    @order_namespace.doc(
+        description='Get a user-specific order by its ID',
+        params= {
+            'order_id':'An ID for the Order',
+            'user_id': 'An ID for the User'
+        }
+        )
     @jwt_required()
     def get(self, user_id, order_id):
         """
@@ -145,6 +171,12 @@ class GetSpecificOrderByUser(Resource):
 @order_namespace.route("/user/<int:user_id>/orders")
 class GetUserOrder(Resource):
     @order_namespace.marshal_list_with(order_model)
+    @order_namespace.doc(
+        description='Get all Orders by a specific User',
+        params= {
+            'user_id': 'An ID for a specific User'
+        }
+        )
     @jwt_required()
     def get(self, user_id):
         """
@@ -160,6 +192,12 @@ class UpdateOrdersStatus(Resource):
     
     @order_namespace.expect(order_status_model)
     @order_namespace.marshal_with(order_status_model)
+    @order_namespace.doc(
+        description='Updating the status of an Order',
+        params= {
+            'order_id': 'An ID for a specific Order'
+        }
+        )
     @jwt_required()
     def patch(self, order_id):
         """
