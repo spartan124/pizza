@@ -54,7 +54,7 @@ def create_app(config=config_dict['dev']):
     
 
     api.add_namespace(ons)
-    api.add_namespace(ans, path="/auth")
+    api.add_namespace(ans)
 
     @api.errorhandler(NotFound)
     def not_found(error):
